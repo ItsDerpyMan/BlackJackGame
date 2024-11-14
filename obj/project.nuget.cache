@@ -1,0 +1,10 @@
+{
+  "version": 2,
+  "dgSpecHash": "+qbrSo6z3niQfiabMp4J6zcI499A9TpxRIKh072Txwt/61q6SSO4e630it9b6nycZNzym6Un5YJyxGmhW3PtBA==",
+  "success": true,
+  "projectFilePath": "/home/derpy/Dokumentumok/Programming/Blackjack/Blackjack.csproj",
+  "expectedPackageFiles": [
+    "/home/derpy/.nuget/packages/microsoft.aspnetcore.app.ref/8.0.10/microsoft.aspnetcore.app.ref.8.0.10.nupkg.sha512"
+  ],
+  "logs": []
+}
