@@ -13,33 +13,36 @@ public class Game
     {
         //Initializing the deck
         deck = new Deck();
+
         // Setting up the starting capital
         money = 500;
         bid = 10;
+
         //game loop
         state = true;
 
     }
-    public static void PlaceBets(Keys key)
+    public static void PlaceBets()
     {
-        if (key != Keys.Bid) { state = false; }
+        if (!I.OnKey(I.Keys.Bid)) { state = false; }
         bool loop = true;
         do
         {
             MakeBets(loop);
         } while (loop == true);
     }
+
     public static void MakeBets(bool loop)
     {
         if (money < 10) { state = false; }
-        if (key != Keys.Enter || key != Keys.Space)
+        if (I.OnKey(I.Keys.Enter) || I.OnKey(I.Keys.Space))
         {
-            if (key == Keys.Left || key == Keys.Up)
+            if (I.OnKey(I.Keys.Left) || I.OnKey(I.Keys.Up))
             {
                 if (bid > money) { throw new Exception("You cant bid more than you have!"); }
                 bid += 10;
             }
-            else if (key == Keys.Right || key == Keys.Down)
+            else if (I.OnKey(I.Keys.Right) || I.OnKey(I.Keys.Down))
             {
                 if (bid < 10) { throw new Exception("The minimum bet is 10."); }
                 bid -= 10;
@@ -120,6 +123,31 @@ public class Player
     {
         return hand;
     }
+    public Card give()
+    {
+        Card card = hand[0];
+        hand.Remove(card);
+        return card;
+    }
+    public int sum()
+    {
+        int sum = 0;
+        foreach (var card in hand)
+        {
+            if ((int)card.rank > 10) { sum += 10; }
+            sum += (int)card.rank;
+        }
+        return sum;
+    }
+    public bool CanSplit()
+    {
+        if (hand.Count() != 2)
+        {
+            return false;
+        }
+        return hand[0].rank == hand[1].rank;
+    }
+
 }
 
 public class Dealer
@@ -142,8 +170,8 @@ public class Dealer
 
 public struct Card
 {
-    public Suit suit;
-    public Rank rank;
+    public Suit suit { get; set; }
+    public Rank rank { get; set; }
 
     public override string ToString()
     {
@@ -185,19 +213,19 @@ public struct Card
 
 public enum Rank
 {
-    Two,
-    Three,
-    Four,
-    Five,
-    Six,
-    Seven,
-    Eight,
-    Nine,
-    Ten,
-    Jack,
-    Queen,
-    King,
-    Ace,
+    Two = 2,
+    Three = 3,
+    Four = 4,
+    Five = 5,
+    Six = 6,
+    Seven = 7,
+    Eight = 8,
+    Nine = 9,
+    Ten = 10,
+    Jack = 11,
+    Queen = 12,
+    King = 13,
+    Ace = 14,
 }
 
 public enum Suit

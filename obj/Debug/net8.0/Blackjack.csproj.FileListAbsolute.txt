@@ -12,3 +12,4 @@
 /home/derpy/Dokumentumok/Programming/Blackjack/obj/Debug/net8.0/Blackjack.pdb
 /home/derpy/Dokumentumok/Programming/Blackjack/obj/Debug/net8.0/Blackjack.genruntimeconfig.cache
 /home/derpy/Dokumentumok/Programming/Blackjack/obj/Debug/net8.0/ref/Blackjack.dll
+/home/derpy/Dokumentumok/Programming/Blackjack/obj/Debug/net8.0/Blackjack.sourcelink.json
