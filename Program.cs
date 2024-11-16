@@ -70,10 +70,13 @@ class Program
             //If player has the same rank's card in his hand
             if (player.CanSplit())
             {
-                Player player2 = new Player();
-                player2.Add(player.give());
+                //New Hand
+                player.NewHand(1);
+                //Splits the cards
+                player.Add(player.give(), 1);
+                // gives One-One card to each hand
                 player.Add(Game.get_card(Game.deck));
-                player2.Add(Game.get_card(Game.deck));
+                player.Add(Game.get_card(Game.deck), 1);
             }
             //stop
         }

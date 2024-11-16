@@ -4,7 +4,6 @@ public class Game
 {
     private static Random rand = new Random();
     public static Deck? deck;
-    public static int money;
     public static int bid;
     public static int placedbet;
     public static bool state;
@@ -15,7 +14,6 @@ public class Game
         deck = new Deck();
 
         // Setting up the starting capital
-        money = 500;
         bid = 10;
 
         //game loop
@@ -34,12 +32,12 @@ public class Game
 
     public static void MakeBets(bool loop)
     {
-        if (money < 10) { state = false; }
+        if (Player.money < 10) { state = false; }
         if (I.OnKey(I.Keys.Enter) || I.OnKey(I.Keys.Space))
         {
             if (I.OnKey(I.Keys.Left) || I.OnKey(I.Keys.Up))
             {
-                if (bid > money) { throw new Exception("You cant bid more than you have!"); }
+                if (bid > Player.money) { throw new Exception("You cant bid more than you have!"); }
                 bid += 10;
             }
             else if (I.OnKey(I.Keys.Right) || I.OnKey(I.Keys.Down))
@@ -49,7 +47,7 @@ public class Game
             }
         }
         loop = false;
-        money -= bid;
+        Player.money -= bid;
         placedbet = bid;
         bid = 10;
     }
@@ -109,62 +107,127 @@ public class Deck
 }
 public class Player
 {
-    private List<Card> hand;
+    private List<Hand> Hands;
+    public static int money;
 
     public Player()
     {
-        hand = new List<Card>();
+        // Initializing the first Hand
+        Hands = new List<Hand>
+        {
+            new Hand()
+        };
+        // Starting capital
+        money = 500;
     }
-    public void Add(Card card)
+    public void NewHand(int index)
     {
-        hand.Add(card);
+        if (index < 0 || index >= Hands.Count())
+        {
+            throw new ArgumentException("Invalid index usage!");
+        }
+        Hands[index] = new Hand();
     }
-    public List<Card> get_hand()
+
+    public void Add(Card card, int index = 0)
     {
-        return hand;
+        if (index < 0 || index >= Hands.Count())
+        {
+            throw new ArgumentException("Invalid index usage!");
+        }
+        Hands[index].Add(card);
     }
-    public Card give()
+    public Hand get_hand(int index = 0)
     {
-        Card card = hand[0];
-        hand.Remove(card);
+        if (index < 0 || index >= Hands.Count())
+        {
+            throw new ArgumentException("Invalid index usage!");
+        }
+        return Hands[index];
+    }
+    public Card give(int index = 0)
+    {
+        if (index < 0 || index >= Hands.Count())
+        {
+            throw new ArgumentException("Invalid index usage!");
+        }
+        Card card = Hands[index].get_card_from_hand(out int pop_at);
+        Hands[index].hand.RemoveAt(pop_at);
         return card;
     }
-    public int sum()
+    public int sum(int index = 0)
     {
+        if (index < 0 || index >= Hands.Count())
+        {
+            throw new ArgumentException("Invalid index usage!");
+        }
         int sum = 0;
-        foreach (var card in hand)
+        foreach (var card in Hands[index])
         {
             if ((int)card.rank > 10) { sum += 10; }
             sum += (int)card.rank;
         }
         return sum;
     }
-    public bool CanSplit()
+    public bool CanSplit(int index = 0)
     {
-        if (hand.Count() != 2)
+        if (index < 0 || index >= Hands.Count())
+        {
+            throw new ArgumentException("Invalid index usage!");
+        }
+        if (Hands[index].hand.Count() != 2)
         {
             return false;
         }
-        return hand[0].rank == hand[1].rank;
+        return Hands[index].hand[0].rank == Hands[index].hand[1].rank;
     }
-
 }
 
 public class Dealer
 {
-    private List<Card> hand;
+    private Hand hand;
 
     public Dealer()
     {
-        hand = new List<Card>();
+        hand = new Hand();
+    }
+
+}
+//Hand type impl
+public class Hand : IEnumerable<Card>
+{
+    public List<Card> cards { get; private set; }
+    public int bet { get; set; }
+
+    public Hand()
+    {
+        //Init. a new hand
+        List<Card> cards = new List<Card>();
+        //init the bet - later will be assigned a bet
+        int bet = 0;
     }
     public void Add(Card card)
     {
-        hand.Add(card);
+        cards.Add(card);
     }
-    public List<Card> get_hand()
+
+    public Card get_card_from_hand(out int index)
     {
-        return hand;
+        if (cards.Count() != 2)
+        {
+            throw new Exception("The hand contains more than or less than two cards");
+        }
+        index = 0;
+        return cards[index];
+    }
+
+    public IEnumerator<Card> GetEnumerator()
+    {
+        return cards.GetEnumerator();
+    }
+    IEnumerator IEnumerable.GetEnumerator()
+    { //fix todo
+        return GetEnumerator();
     }
 }
 
