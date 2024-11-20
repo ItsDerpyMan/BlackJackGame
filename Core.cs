@@ -1,3 +1,7 @@
+using System;
+using System.Collections;
+using System.Collections.Generic;
+
 namespace BlackJackGame;
 
 public class Game
@@ -56,7 +60,7 @@ public class Game
     {
         // Each player gets two cards
         player.Add(get_card(deck));
-        dealer.Add(get_card(deck));
+        dealer.Add(get_card(deck)); //
     }
 
     public static Card get_card(Deck? deck)
@@ -74,6 +78,7 @@ public class Game
         return card;
     }
 }
+
 public class Deck
 {
     private List<Card> deck;
@@ -107,7 +112,7 @@ public class Deck
 }
 public class Player
 {
-    private List<Hand> Hands;
+    public List<Hand> Hands;
     public static int money;
 
     public Player()
@@ -152,7 +157,7 @@ public class Player
             throw new ArgumentException("Invalid index usage!");
         }
         Card card = Hands[index].get_card_from_hand(out int pop_at);
-        Hands[index].hand.RemoveAt(pop_at);
+        Hands[index].cards.RemoveAt(pop_at);
         return card;
     }
     public int sum(int index = 0)
@@ -175,21 +180,25 @@ public class Player
         {
             throw new ArgumentException("Invalid index usage!");
         }
-        if (Hands[index].hand.Count() != 2)
+        if (Hands[index].cards.Count() != 2)
         {
             return false;
         }
-        return Hands[index].hand[0].rank == Hands[index].hand[1].rank;
+        return Hands[index].cards[0].rank == Hands[index].cards[1].rank;
     }
 }
 
 public class Dealer
 {
-    private Hand hand;
+    public Hand hand;
 
     public Dealer()
     {
         hand = new Hand();
+    }
+    public void Add(Card card)
+    {
+        hand.Add(card);
     }
 
 }
@@ -197,15 +206,16 @@ public class Dealer
 public class Hand : IEnumerable<Card>
 {
     public List<Card> cards { get; private set; }
-    public int bet { get; set; }
+    public int bet { get; private set; }
 
     public Hand()
     {
         //Init. a new hand
-        List<Card> cards = new List<Card>();
+        cards = new List<Card>();
         //init the bet - later will be assigned a bet
-        int bet = 0;
+        bet = 0;
     }
+
     public void Add(Card card)
     {
         cards.Add(card);
@@ -225,13 +235,14 @@ public class Hand : IEnumerable<Card>
     {
         return cards.GetEnumerator();
     }
+
     IEnumerator IEnumerable.GetEnumerator()
-    { //fix todo
+    {
         return GetEnumerator();
     }
 }
 
-public struct Card
+public struct Card : IComparable<Card>
 {
     public Suit suit { get; set; }
     public Rank rank { get; set; }
@@ -240,8 +251,12 @@ public struct Card
     {
         return $"[{ToChar(rank)}{ToChar(suit)}]";  // Provide a readable output for the card
     }
+    public int CompareTo(Card card)
+    {
+        return this.rank.CompareTo(card.rank);
+    }
 
-    public char ToChar(Suit suit)
+    public static char ToChar(Suit suit)
     {
         return suit switch
         {
@@ -249,10 +264,10 @@ public struct Card
             Suit.Spades => '♠',
             Suit.Hearts => '♥',
             Suit.Diamonds => '♦',
-            _ => throw new ArgumentOutOfRangeException(nameof(suit), "Invalid suit value")
+            _ => '?'
         };
     }
-    public char ToChar(Rank rank)
+    public static char ToChar(Rank rank)
     {
         return rank switch
         {
@@ -269,7 +284,7 @@ public struct Card
             Rank.Queen => 'Q',
             Rank.King => 'K',
             Rank.Ace => 'A',
-            _ => throw new ArgumentOutOfRangeException(nameof(rank), "Invalid rank value")
+            _ => (char)('0' + (int)rank)
         };
     }
 } //[A♠]   [10♦]   [K♣v]   [5♥]
